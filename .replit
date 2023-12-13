@@ -8,4 +8,4 @@ channel = "stable-22_11"
 [deployment]
 build = ["npm", "run", "build"]
 run = ["npm", "run", "preview"]
-deploymentTarget = "gce"
+deploymentTarget = "cloudrun"

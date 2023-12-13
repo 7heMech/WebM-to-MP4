@@ -138,8 +138,8 @@
   }
 
   .drop {
-    width: 600px;
-    height: 400px;
+    width: 500px;
+    height: 350px;
     display: grid;
     place-content: center;
     margin-block-start: 2rem;
