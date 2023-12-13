@@ -41,22 +41,22 @@
 
     const file = await readFile(video);
 
-    await ffmpeg.writeFile("file.webm", file);
-    await ffmpeg.exec(["-i", "file.webm", "output.mp4"]);
-    const data = await ffmpeg.readFile("output.mp4");
+    await ffmpeg.writeFile("video.webm", file);
+    await ffmpeg.exec(["-i", "video.webm", "video.mp4"]);
+    const data = await ffmpeg.readFile("video.mp4");
 
     state = states.done;
-    setTimeout(() => state = states.loaded, 3000);
-    
+    setTimeout(() => (state = states.loaded), 3000);
+
     return data;
   }
 
-  function downloadVideo(data) {
+  function downloadVideo(data, name = "video.mp4") {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(
       new Blob([data.buffer], { type: "video/mp4" })
     );
-    a.download = "video.mp4";
+    a.download = name;
 
     setTimeout(() => {
       a.click();
@@ -64,6 +64,7 @@
   }
 
   async function handleDrop({ dataTransfer: { files } }) {
+    if (state !== states.loaded) return (error = "Operation in progress");
     if (files.length > 1) return (error = "Upload one file at a time");
     const file = files[0];
 
@@ -71,30 +72,32 @@
       return (error = "Only WebM files are supported");
     error = null;
 
+    const name = file.name.split('.').slice(0, -1).join('.') + '.mp4';
     const data = await convertVideo(file);
-    downloadVideo(data);
+    downloadVideo(data, name);
   }
 
   function handleClick() {
-    const input = document.createElement('input');
+    const input = document.createElement("input");
     input.accept = "video/webm";
-    input.type = 'file';
+    input.type = "file";
 
-    input.onchange = e => { 
+    input.onchange = (e) => {
       const files = e.target.files;
-      handleDrop({ dataTransfer: { files } })
-    }
+      handleDrop({ dataTransfer: { files } });
+    };
 
     input.click();
   }
 
   async function loadFFmpeg() {
     ffmpeg = new FFmpeg();
-    ffmpeg.on("progress", (e) => $progress = e.progress * 100)
+    ffmpeg.on("progress", (e) => ($progress = e.progress * 100));
 
     await ffmpeg.load({
-      coreURL: '/ffmpeg/core.js',
-      wasmURL: '/ffmpeg/core.wasm',
+      coreURL: "/ffmpeg/core.js",
+      wasmURL: "/ffmpeg/core.wasm",
+      workerURL: "/ffmpeg/core.worker.js"
     });
 
     state = states.loaded;

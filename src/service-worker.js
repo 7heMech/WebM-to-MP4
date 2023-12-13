@@ -42,7 +42,7 @@ self.addEventListener("fetch", (event) => {
 
     try {
       const isExtension = url.protocol !== "http:" && url.protocol !== "https:";
-      if (isExtension) return;
+      if (isExtension) return response;
 
       const response = await fetch(event.request);
       const isSuccess = response.status >= 200 && response.status < 300;
