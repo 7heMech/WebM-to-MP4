@@ -1,23 +1,17 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { defineConfig } from "vite";
 
-/** @type {import('vite').Plugin} */
-const viteServerConfig = {
-  name: "add headers",
-  configureServer: (server) => {
-    server.middlewares.use((req, res, next) => {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET");
-      res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-      res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-      next();
-    });
-  },
-};
-
 export default defineConfig({
   optimizeDeps: {
     exclude: ["@ffmpeg/ffmpeg", "@ffmpeg/util"],
   },
-  plugins: [viteServerConfig, sveltekit()],
+  server: {
+    headers: {
+      // Needed to allow SharedArrayBuffer to squeak through on some browsers....
+      // REFERENCE https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer#security_requirements
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
+  plugins: [sveltekit()],
 });
