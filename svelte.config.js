@@ -9,11 +9,7 @@ const config = {
       fallback: null,
       precompress: false,
       strict: true
-    }),
-    prerender: {
-      default: true,
-      entries: ['*']
-    }
+    })
 	},
 };
 
