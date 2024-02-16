@@ -9,3 +9,17 @@ channel = "stable-22_11"
 build = ["npm", "run", "build"]
 deploymentTarget = "static"
 publicDir = "build"
+
+[[deployment.responseHeaders]]
+path = "*"
+name = "Cross-Origin-Opener-Policy"
+value = "same-origin"
+
+[[deployment.responseHeaders]]
+path = "*"
+name = "Cross-Origin-Embedder-Policy"
+value = "require-corp"
+
+[[ports]]
+localPort = 4173
+externalPort = 80

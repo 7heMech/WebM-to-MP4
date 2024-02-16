@@ -97,6 +97,7 @@
     await ffmpeg.load({
       coreURL: "/ffmpeg/core.js",
       wasmURL: "/ffmpeg/core.wasm",
+      workerURL: "/ffmpeg/worker.js"
     });
 
     state = states.loaded;
