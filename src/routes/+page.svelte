@@ -94,10 +94,13 @@
     ffmpeg = new FFmpeg();
     ffmpeg.on("progress", (e) => ($progress = e.progress * 100));
 
+		const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm'
+
+
     await ffmpeg.load({
-      coreURL: "/ffmpeg/core.js",
-      wasmURL: "/ffmpeg/core.wasm",
-      workerURL: "/ffmpeg/worker.js"
+      coreURL: `${baseURL}/ffmpeg-core.js`,
+      wasmURL: `${baseURL}/ffmpeg-core.wasm`,
+      workerURL: `${baseURL}/ffmpeg-core.worker.js`
     });
 
     state = states.loaded;
