@@ -12,10 +12,12 @@
     done: 2,
   };
 
-  let state = states.loading;
   let error = "";
   let ffmpeg = null;
+	let startedTime = 0;
+	let estimatedTime = "";
   let progress = tweened(0);
+  let state = states.loading;
 
   async function readFile(file) {
     const reader = new FileReader();
@@ -42,6 +44,8 @@
     const file = await readFile(video);
 
     await ffmpeg.writeFile("video.webm", file);
+
+		startedTime = Date.now();
     await ffmpeg.exec(["-i", "video.webm", "video.mp4"]);
     const data = await ffmpeg.readFile("video.mp4");
 
@@ -90,9 +94,27 @@
     input.click();
   }
 
+	function updateEstimatedTime(progressValue) {
+		if (progressValue <= 0) {
+			estimatedTime = "Estimating time...";
+		} else {
+			const passedTime = Date.now() - startedTime;
+			const estimatedTotalTime = passedTime / (progressValue / 100);
+			const estimatedTimeLeft = estimatedTotalTime - passedTime;
+			const minutes = Math.floor(estimatedTimeLeft / 60000);
+			const seconds = Math.floor((estimatedTimeLeft % 60000) / 1000);
+			estimatedTime = `${minutes} minute(s) and ${seconds} second(s) remaining`;
+		}
+	}
+
   async function loadFFmpeg() {
     ffmpeg = new FFmpeg();
-    ffmpeg.on("progress", (e) => ($progress = e.progress * 100));
+    ffmpeg.on("progress", (e) => {
+			const progressValue = e.progress * 100
+			$progress = progressValue;
+
+			updateEstimatedTime(progressValue);
+		});
 
 		const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm'
 
@@ -127,6 +149,7 @@
         {$progress.toFixed(0)}%
       </div>
     </div>
+		<span in:fade>{estimatedTime}</span>
   {:else if state === states.done}
     <div use:confetti />
     <p in:fade>Done! 🎉</p>

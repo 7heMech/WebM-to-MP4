@@ -5,24 +5,24 @@ import { build, files, version } from "$service-worker";
 
 const assets = build.concat(files);
 
-async function addFilesToCache() {
-  const cache = await caches.open(version);
-  await cache.addAll(assets);
-}
-
-async function deleteOldCaches() {
-  for (const key of await caches.keys()) {
-    if (key !== version) await caches.delete(key);
-  }
-}
-
 // install service worker
 self.addEventListener("install", (event) => {
+  async function addFilesToCache() {
+    const cache = await caches.open(version);
+    await cache.addAll(assets);
+  }
+
   event.waitUntil(addFilesToCache());
 });
 
 // activate service worker
 self.addEventListener("activate", (event) => {
+  async function deleteOldCaches() {
+    for (const key of await caches.keys()) {
+      if (key !== version) await caches.delete(key);
+    }
+  }
+
   event.waitUntil(deleteOldCaches());
 });
 
